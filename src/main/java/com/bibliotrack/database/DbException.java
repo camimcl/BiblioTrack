@@ -1,4 +1,4 @@
-package bibliotrack.database;
+package com.bibliotrack.database;
 
 public class DbException extends RuntimeException {
     private static final long serialVersionUID = 1L;

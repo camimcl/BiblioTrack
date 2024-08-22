@@ -1,4 +1,4 @@
-package bibliotrack.database;
+package com.bibliotrack.database;
 
 import java.io.FileInputStream;
 import java.io.IOException;
