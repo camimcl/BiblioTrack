@@ -1,8 +1,6 @@
-package com.bibliotrack.reports;
+package com.bibliotrack.entities;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Date;
 @Data

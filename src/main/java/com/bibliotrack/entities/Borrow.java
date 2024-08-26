@@ -1,4 +1,4 @@
-package com.bibliotrack.transactions;
+package com.bibliotrack.entities;
 
 import lombok.Data;
 

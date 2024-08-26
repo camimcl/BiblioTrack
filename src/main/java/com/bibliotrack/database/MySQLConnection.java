@@ -12,9 +12,10 @@ public class MySQLConnection {
     private static final String USER = "root";
     private static final String PASSWORD = "root";
 
-    public  Connection getConnection() throws SQLException {
+    public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
+
     public static void fechar(Connection conn) {
         if (conn != null) {
             try {
