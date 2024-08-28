@@ -11,7 +11,9 @@ import org.jooq.impl.DSL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public abstract class BaseService<T> {
@@ -24,6 +26,7 @@ public abstract class BaseService<T> {
 
     protected <R> R execute(Function<DSLContext, R> function) throws SQLException {
         try(Connection connection = MySQLConnection.getConnection()) {
+            //USA A CONEXAO PARA CRIAR UM OBJETO DO TIPO DSLCONTEXT PARA REALIZAR CONSULTAS SQL
             DSLContext create = DSL.using(connection);
 
             return function.apply(create);
@@ -59,6 +62,51 @@ public abstract class BaseService<T> {
                     .execute();
 
             return entity;
+        });
+    }
+    public T edit(T entity, String idField, Object idValue) throws SQLException {
+        return execute((create) -> {
+            // Obtenha os campos da entidade usando reflection
+            java.lang.reflect.Field[] fields = entity.getClass().getDeclaredFields();
+
+            // Crie um Map para armazenar os pares campo/valor a serem atualizados
+            Map<Field<?>, Object> fieldMap = new HashMap<>();
+
+            // Popule o Map com os valores da entidade
+            Arrays.stream(fields)
+                    .filter(field -> !field.getName().equals(idField)) // Exclui o campo ID
+                    .peek(field -> field.setAccessible(true))
+                    .forEach(field -> {
+                        try {
+                            fieldMap.put(DSL.field(DSL.name(field.getName())), field.get(entity));
+                        } catch (IllegalAccessException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+
+            // Realiza o update
+            create.update(getTable())
+                    .set(fieldMap)
+                    .where(DSL.field(idField).eq(idValue))
+                    .execute();
+
+            return entity;
+        });
+    }
+    public void remove(String idField, Object idValue) throws SQLException {
+        execute((create) -> {
+            create.deleteFrom(getTable())
+                    .where(DSL.field(idField).eq(idValue))
+                    .execute();
+            return null;
+        });
+    }
+    public List<T> find(String fieldName, Object value, Class<T> type) throws SQLException {
+        return execute((create) -> {
+            return create.select()
+                    .from(getTable())
+                    .where(DSL.field(fieldName).eq(value))
+                    .fetchInto(type);
         });
     }
 }

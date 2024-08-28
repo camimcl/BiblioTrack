@@ -103,32 +103,43 @@ public class UserService extends BaseService<User> {
 //        }
 //            return null;
 //    }
-    public User editUser (User user) {
-        try (Connection connection = MySQLConnection.getConnection()){
-            DSLContext create = DSL.using(connection);
-
-            create.update(DSL.table("User"))
-                    .set(DSL.field("email"),user.getEmail())
-                    .set(DSL.field("password"),user.getPassword());
-
-            return user;
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-        return null;
+    public User addUser(User user) throws SQLException {
+        return add(user);
     }
-    public void removeUser(int id) {
-        try (Connection connection = MySQLConnection.getConnection()){
-            DSLContext create = DSL.using(connection);
-
-            create.deleteFrom(DSL.table("User")
-                    .where(DSL.field("id")
-                    .eq(id)));
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    public void removeUser(int id) throws SQLException {
+        remove("id", id);
     }
+    public User editUser(User user) throws SQLException {
+        return edit(user, "id", user.getId());
+    }
+
+//    public User editUser (User user) {
+//        try (Connection connection = MySQLConnection.getConnection()){
+//            DSLContext create = DSL.using(connection);
+//
+//            create.update(DSL.table("User"))
+//                    .set(DSL.field("email"),user.getEmail())
+//                    .set(DSL.field("password"),user.getPassword());
+//
+//            return user;
+//        }
+//        catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+
+//    public void removeUser(int id) {
+//        try (Connection connection = MySQLConnection.getConnection()){
+//            DSLContext create = DSL.using(connection);
+//
+//            create.deleteFrom(DSL.table("User")
+//                    .where(DSL.field("id")
+//                    .eq(id)));
+//        }
+//        catch (Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
 }
