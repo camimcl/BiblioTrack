@@ -32,22 +32,7 @@ public class UserService extends BaseService<User> {
             return null;
         });
     }
-//        try(Connection connection = MySQLConnection.getConnection()) {
-//            DSLContext create = DSL.using(connection);
-//
-//            List<User> result = create.select()
-//                                    .from("User")
-//                                    .where(DSL.field("id").eq(id))
-//                                    .fetchInto(User.class);
-//
-//            if (!result.isEmpty()) {
-//                return result.get(0);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
+
 
     public List<User> getUserbyName(String name) throws SQLException {
         return execute((create) -> {
@@ -63,46 +48,9 @@ public class UserService extends BaseService<User> {
 
             return null;
         });
-//        try (Connection connection = MySQLConnection.getConnection()) {
-//            DSLContext create = DSL.using(connection);
-//
-//            List <User> result = create.select()
-//                                    .from("User")
-//                                    .where(DSL.field("name")
-//                                    .eq(name))
-//                                    .fetchInto(User.class);
-//            if(!result.isEmpty()) {
-//                return result;
-//            }
-//        }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
+
     }
-//    public User addUser(User user) throws SQLException {
-//        return add(user);
-//        try (Connection connection = MySQLConnection.getConnection()) {
-//            DSLContext create = DSL.using(connection);
-//
-//            create.insertInto(DSL.table("User"),
-//                    DSL.field("id"),
-//                    DSL.field("name"),
-//                    DSL.field("email"),
-//                    DSL.field("password"))
-//
-//                    .values(user.getId(),
-//                            user.getName(),
-//                            user.getEmail(),
-//                            user.getPassword())
-//                    .execute();
-//
-//            return user;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//            return null;
-//    }
+
     public User addUser(User user) throws SQLException {
         return add(user);
     }
@@ -112,34 +60,13 @@ public class UserService extends BaseService<User> {
     public User editUser(User user) throws SQLException {
         return edit(user, "id", user.getId());
     }
-
-//    public User editUser (User user) {
-//        try (Connection connection = MySQLConnection.getConnection()){
-//            DSLContext create = DSL.using(connection);
-//
-//            create.update(DSL.table("User"))
-//                    .set(DSL.field("email"),user.getEmail())
-//                    .set(DSL.field("password"),user.getPassword());
-//
-//            return user;
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
-//    public void removeUser(int id) {
-//        try (Connection connection = MySQLConnection.getConnection()){
-//            DSLContext create = DSL.using(connection);
-//
-//            create.deleteFrom(DSL.table("User")
-//                    .where(DSL.field("id")
-//                    .eq(id)));
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//        }
-//    }
+    public User findUserById(int id) throws SQLException {
+        List <User> users = find("id",id,User.class);
+        return users.isEmpty() ? null : users.get(0);
+    }
+    public User findUserByName(String userName) throws SQLException {
+        List <User> users = find("name",userName,User.class);
+        return users.isEmpty() ? null : users.get(0);
+    }
 
 }
