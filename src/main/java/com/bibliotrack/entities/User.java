@@ -20,17 +20,7 @@ public class User {
         this.password = password;
 
     }
-
     public User() {
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", name='" + name + '\'' +
-                ", id=" + id +
-                '}';
-    }
 }

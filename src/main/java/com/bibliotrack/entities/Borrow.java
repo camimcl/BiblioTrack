@@ -13,5 +13,18 @@ public class Borrow {
     private Date returnDate;
     private Date dueDate;
     private boolean returned;
+
+    public Borrow(int id, int userId, int bookId, Date borrowDate, Date returnDate, Date dueDate, boolean returned) {
+        this.id = id;
+        this.userId = userId;
+        this.bookId = bookId;
+        this.borrowDate = borrowDate;
+        this.returnDate = returnDate;
+        this.dueDate = dueDate;
+        this.returned = returned;
+    }
+
+    public Borrow() {
+    }
 }
 
