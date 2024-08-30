@@ -72,12 +72,13 @@ public abstract class BaseService<T> {
             // Crie um Map para armazenar os pares campo/valor a serem atualizados
             Map<Field<?>, Object> fieldMap = new HashMap<>();
 
-            // Popule o Map com os valores da entidade
+            // Popule o Map com os valores da entidade, excluindo o campo ID
             Arrays.stream(fields)
                     .filter(field -> !field.getName().equals(idField)) // Exclui o campo ID
                     .peek(field -> field.setAccessible(true))
                     .forEach(field -> {
                         try {
+                            // Adiciona apenas campos que não sejam o campo ID
                             fieldMap.put(DSL.field(DSL.name(field.getName())), field.get(entity));
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException(e);
@@ -93,6 +94,8 @@ public abstract class BaseService<T> {
             return entity;
         });
     }
+
+
     public void remove(String idField, Object idValue) throws SQLException {
         execute((create) -> {
             create.deleteFrom(getTable())
@@ -107,6 +110,15 @@ public abstract class BaseService<T> {
                     .from(getTable())
                     .where(DSL.field(fieldName).eq(value))
                     .fetchInto(type);
+        });
+    }
+    public void editField(String fieldName, Object fieldValue, String idField, Object idValue) throws SQLException {
+        execute((create) -> {
+            create.update(getTable())
+                    .set(DSL.field(fieldName), fieldValue)
+                    .where(DSL.field(idField).eq(idValue))
+                    .execute();
+            return null;
         });
     }
 }

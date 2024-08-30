@@ -13,12 +13,30 @@ public class Library {
    //login
    public static void main(String[] args) throws SQLException {
        UserService userService = new UserService();
-//       User camile = new User(5,"Camile Pereira","camilep@gmail.com","olamundo1236");
 //
-//       userService.add(camile);
+//       userService.addUser(camile);
+       try {
+        User test = userService.findUserById(3);
+//        System.out.println(test);
 
-       System.out.println(userService.findUserById(2));
-       System.out.println(userService.findUserByName("Pedro"));
+            if (test  != null) {
+//                User pedro = new User(8,"Pedro Araujo","pedropicanhasmppp@gmail.com","olamundo1236");
+//                 test.setEmail("thiaguinhooo55553@gmail.com");
+//                userService.addUser(pedro);
+//                userService.editUser(test);
+//                System.out.println(test);
+//                userService.removeUser();
+//                System.out.println(userService.findUserByName("Camile"));
+                System.out.println(userService.findUserByName("Pedro Araujo"));
+            }
+
+        }catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Erro ao editar o usuário.");
+       }
+
+
+
 
    }
 }
