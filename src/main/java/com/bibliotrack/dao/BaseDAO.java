@@ -1,7 +1,6 @@
-package com.bibliotrack.services;
+package com.bibliotrack.dao;
 
 import com.bibliotrack.database.MySQLConnection;
-import com.bibliotrack.entities.User;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class BaseService<T> {
+public abstract class BaseDAO<T> {
 
     protected Table<Record> getTable() {
         return DSL.table(getTableName());
@@ -49,7 +48,11 @@ public abstract class BaseService<T> {
                     .peek(field -> field.setAccessible(true))
                     .map(field -> {
                         try {
-                            return field.get(entity);
+                            Object value = field.get(entity);
+                            if(value instanceof Enum) {
+                                return ((Enum<?>) value).name();
+                            }
+                            return value;
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException(e);
                         }

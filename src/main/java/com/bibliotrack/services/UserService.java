@@ -1,70 +1,31 @@
 package com.bibliotrack.services;
 
-import com.bibliotrack.database.MySQLConnection;
+import com.bibliotrack.dao.UserDAO;
 import com.bibliotrack.entities.User;
+import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
-import org.jooq.DSLContext;
-import org.jooq.Result;
-import org.jooq.impl.DSL;
+public class UserService {
+    private UserDAO userDAO = new UserDAO();
 
-public class UserService extends BaseService<User> {
+    public void registerUser(User user) throws SQLException {
+        String hashedPassword = hashPassword(user.getPassword());
+        user.setPassword(hashedPassword);
 
-    @Override
-    protected String getTableName() {
-        return "User";
+        userDAO.addUser(user);
     }
-
-    public User getUserById(int id) throws SQLException {
-        return execute((create) -> {
-                User user = create.select()
-                    .from("User")
-                    .where(DSL.field("id").eq(id))
-                    .fetchOneInto(User.class);
-
-
-            return user;
-        });
+    public String hashPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
+    public boolean authenticateUser(String email, String password) throws SQLException {
+        User user = userDAO.findUserByEmail(email);
 
-
-    public List<User> getUserbyName(String name) throws SQLException {
-        return execute((create) -> {
-            List <User> result = create.select()
-                    .from("User")
-                    .where(DSL.field("name")
-                            .eq(name))
-                    .fetchInto(User.class);
-
-            if(!result.isEmpty()) {
-                return result;
-            }
-
-            return null;
-        });
-
+        //user not found
+        if(user == null){
+            return false;
+        }
+        //verify password
+        return BCrypt.checkpw(password, user.getPassword());
     }
-
-    public User addUser(User user) throws SQLException {
-        return add(user);
-    }
-    public void removeUser(int id) throws SQLException {
-        remove("id", id);
-    }
-    public User editUser(User user) throws SQLException {
-        int originalId = user.getId();
-        return edit(user, "id", originalId);
-    }
-    public User findUserById(int id) throws SQLException {
-        List <User> users = find("id",id,User.class);
-        return users.isEmpty() ? null : users.get(0);
-    }
-    public List <User> findUserByName(String userName) throws SQLException {
-        List <User> users = find("name",userName,User.class);
-        return users.isEmpty() ? null : users;
-    }
-
 }
