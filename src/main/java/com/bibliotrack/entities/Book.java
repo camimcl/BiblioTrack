@@ -8,14 +8,14 @@ public class Book {
     @Identity
     private int id;
     private String title;
-    private long ISBN;
+    private long isbn;
     private String author;
     private String genre;
     private boolean availability;
 
-    public Book(String title, long ISBN, String author, String genre, boolean availability) {
+    public Book(String title, long isbn, String author, String genre, boolean availability) {
         this.title = title;
-        this.ISBN = ISBN;
+        this.isbn = isbn;
         this.author = author;
         this.genre = genre;
         this.availability = availability;

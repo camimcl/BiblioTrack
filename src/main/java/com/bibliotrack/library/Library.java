@@ -35,28 +35,28 @@ public class Library {
            // Criando e inserindo um novo usuário
 
            User user = new User();
-           user = userDAO.findUserById(1239);
-//           user.setName("Ricardo Cezar");
-//           user.setEmail("rick.cezar@example.com");
-//           user.setPassword("strongpassword13423");
-//           user.setRole(Role.STUDENT);
-//
-//           System.out.println("Registrando novo usuário...");
-//           userService.registerUser(user);
-//           System.out.println("Usuário registrado com ID: " + user.getId());
+//           user = userDAO.findUserById(6);
+           user.setName("Ricardo Cezar");
+           user.setEmail("rick.cezar@example.com");
+           user.setPassword("strongpassword13423");
+           user.setRole(Role.STUDENT);
+
+           System.out.println("Registrando novo usuário...");
+           user = userService.registerUser(user);
+           System.out.println("Usuário registrado com ID: " + user.getId());
 
            // Criando e inserindo um novo livro
            Book book = new Book();
-           book = bookDAO.findBookById(2);
-//           book.setTitle("Poder do Hábito");
-//           book.setAuthor("Charles Duhigg");
-//           book.setISBN(978140006);
-//           book.setGenre("self-help");
-//           book.setAvailability(true);
-//
-//           System.out.println("Adicionando novo livro...");
-//           bookDAO.add(book);
-//           System.out.println("Livro adicionado com ID: " + book.getId());
+//           book = bookDAO.findBookById(2);
+           book.setTitle("Poder do Hábito");
+           book.setAuthor("Charles Duhigg");
+           book.setIsbn(978140006);
+           book.setGenre("self-help");
+           book.setAvailability(true);
+
+           System.out.println("Adicionando novo livro...");
+           book = bookDAO.add(book);
+           System.out.println("Livro adicionado com ID: " + book.getId());
 
            // Criando um novo empréstimo
            System.out.println("Realizando um empréstimo de livro...");

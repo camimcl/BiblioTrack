@@ -2,7 +2,6 @@ package com.bibliotrack.dao;
 
 import com.bibliotrack.annotations.util.AnnotationUtil;
 import com.bibliotrack.database.MySQLConnection;
-import jakarta.xml.bind.JAXB;
 
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -10,13 +9,10 @@ import org.jooq.Record;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.conf.Settings;
-import org.jooq.conf.StatementType;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.Configuration;
-import org.jooq.meta.jaxb.Logging;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -35,12 +31,15 @@ public abstract class BaseDAO<T> {
 
     protected <R> R execute(Function<DSLContext, R> function) throws SQLException {
         try(Connection connection = MySQLConnection.getConnection()) {
-            //DSLContext create = DSL.using(connection);
             Configuration configuration = new DefaultConfiguration();
-//            configuration.withLogging(Logging.WARN);
-            configuration.set(SQLDialect.MYSQL);
-            configuration.set(connection);
-            configuration.set(new Settings().withExecuteLogging(true));
+
+            configuration = configuration.set(SQLDialect.MYSQL);
+            configuration = configuration.set(connection);
+
+            Settings settings = new Settings();
+            settings.setExecuteLogging(true);
+
+            configuration = configuration.set(settings);
 
             DSLContext create = DSL.using(configuration);
 
@@ -75,16 +74,12 @@ public abstract class BaseDAO<T> {
                     })
                     .toArray();
 
-            String identityFieldName = AnnotationUtil.getIdentityFieldName(entity.getClass());
-
-            // Perform the insert
-            Record record = create.insertInto(getTable(), jooqFields)
+            create.insertInto(getTable(), jooqFields)
                     .values(values)
-                    .returning(DSL.field(identityFieldName))
-                    .fetchOne();
+                    .execute();
 
             try {
-                return findByIdentityField(record.get(identityFieldName), (Class<T>) entity.getClass());
+                return findByIdentityField(create.lastID(), (Class<T>) entity.getClass());
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
@@ -132,11 +127,22 @@ public abstract class BaseDAO<T> {
             return null;
         });
     }
+
     public T findByIdentityField(Object value, Class<T> type) throws SQLException {
-        return execute((create) -> create.select()
+        return execute((create) -> {
+            List<T> result = create.select()
                     .from(getTable())
-                    .where(DSL.field(AnnotationUtil.getIdentityFieldName(type)).eq(value))
-                    .fetchInto(type).get(0));
+                    .where(
+                        DSL.field(AnnotationUtil.getIdentityFieldName(type))
+                       .eq(value)
+                    ).fetchInto(type);
+
+            if(result.isEmpty()) {
+                return null;
+            }
+
+            return result.get(0);
+        });
     }
 
     public List<T> find(String fieldName, Object value, Class<T> type) throws SQLException {
