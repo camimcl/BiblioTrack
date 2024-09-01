@@ -31,19 +31,18 @@ public class BorrowService {
         if(!book.isAvailable()){
             throw new BookNotAvailableException("Book with ID: " + bookId + " is not available");
         };
-            Borrow borrow = new Borrow();
-            borrow.setBookId(bookId);
-            borrow.setUserId(userId);
-            borrow.setBorrowDate(new Date());
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(borrow.getBorrowDate());
-            calendar.add(Calendar.DAY_OF_MONTH, borrowPeriodDays);
-            borrow.setDueDate(calendar.getTime());
+        Borrow borrow = new Borrow();
+        borrow.setBookId(bookId);
+        borrow.setUserId(userId);
+        borrow.setBorrowDate(new Date());
 
-            borrowDAO.addBorrow(borrow);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(borrow.getBorrowDate());
+        calendar.add(Calendar.DAY_OF_MONTH, borrowPeriodDays);
+        borrow.setDueDate(calendar.getTime());
 
-        return borrow;
+        return borrowDAO.add(borrow);
     }
     public void returnBook(int borrowId, Date returnDate) throws SQLException {
         Borrow borrow = borrowDAO.findBorrowById(borrowId);

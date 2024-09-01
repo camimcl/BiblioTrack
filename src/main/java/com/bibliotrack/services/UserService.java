@@ -38,16 +38,16 @@ public class UserService {
         return true;
     }
 
-    public void registerUser(User user) throws SQLException {
+    public User registerUser(User user) throws SQLException {
 
         if (validateUser(user)) {
             String hashedPassword = hashPassword(user.getPassword());
             user.setPassword(hashedPassword);
 
-            userDAO.addUser(user);
+            return userDAO.addUser(user);
         }
 
-
+        return null;
     }
     public String hashPassword(String password) {
         return BCrypt.hashpw(password, BCrypt.gensalt());

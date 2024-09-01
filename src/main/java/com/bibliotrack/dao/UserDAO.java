@@ -24,8 +24,7 @@ public class UserDAO extends BaseDAO<User> {
         return edit(user, "id", originalId);
     }
     public User findUserById(int id) throws SQLException {
-        List <User> users = find("id",id,User.class);
-        return users.isEmpty() ? null : users.get(0);
+       return findByIdentityField(id, User.class);
     }
     public List <User> findUserByName(String userName) throws SQLException {
         List <User> users = find("name",userName,User.class);
