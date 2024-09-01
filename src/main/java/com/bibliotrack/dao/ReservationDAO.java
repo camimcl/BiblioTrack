@@ -9,7 +9,7 @@ public class ReservationDAO extends BaseDAO<Reservation> {
 
     @Override
     protected String getTableName() {
-        return "reservation";
+        return "Reservation";
     }
     public Reservation addReservation(Reservation reservation) throws SQLException {
         return add(reservation);

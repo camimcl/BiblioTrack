@@ -9,7 +9,7 @@ public class BorrowDAO extends BaseDAO<Borrow> {
 
     @Override
     protected String getTableName() {
-        return "borrow";
+        return "Borrow";
     }
     public Borrow findBorrowById(int id) throws SQLException {
         List <Borrow> borrowList = find("id",id,Borrow.class);

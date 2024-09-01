@@ -10,7 +10,7 @@ public class LogActivityDAO extends BaseDAO<LogActivity> {
 
     @Override
     protected String getTableName() {
-        return "logactivity";
+        return "LogActivity";
     }
     public List<LogActivity> findLogByUserId (int id) throws SQLException {
         List<LogActivity> logsById = find("userID",id,LogActivity.class);

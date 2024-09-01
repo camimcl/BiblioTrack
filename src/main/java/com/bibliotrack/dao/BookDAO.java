@@ -8,7 +8,7 @@ import java.util.List;
 public class BookDAO extends BaseDAO<Book> {
     @Override
     protected String getTableName() {
-        return "book";
+        return "Book";
     }
     public Book addBook(Book book) throws SQLException {
         return add(book);

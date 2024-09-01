@@ -9,7 +9,7 @@ public class FineDAO extends BaseDAO<Fine> {
 
     @Override
     protected String getTableName() {
-        return "fine";
+        return "Fine";
     }
     public Fine createFine(Fine fine) throws SQLException {
         return add(fine);
