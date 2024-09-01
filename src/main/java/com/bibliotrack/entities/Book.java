@@ -1,9 +1,11 @@
 package com.bibliotrack.entities;
 
+import com.bibliotrack.annotations.Identity;
 import lombok.Data;
 
 @Data
 public class Book {
+    @Identity
     private int id;
     private String title;
     private long ISBN;

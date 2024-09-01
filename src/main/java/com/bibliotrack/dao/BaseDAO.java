@@ -1,10 +1,22 @@
 package com.bibliotrack.dao;
 
+import com.bibliotrack.annotations.util.AnnotationUtil;
 import com.bibliotrack.database.MySQLConnection;
-import org.jooq.*;
-import org.jooq.Record;
-import org.jooq.impl.DSL;
+import jakarta.xml.bind.JAXB;
 
+import org.jooq.DSLContext;
+import org.jooq.Field;
+import org.jooq.Record;
+import org.jooq.SQLDialect;
+import org.jooq.Table;
+import org.jooq.conf.Settings;
+import org.jooq.conf.StatementType;
+import org.jooq.impl.DSL;
+import org.jooq.impl.DefaultConfiguration;
+import org.jooq.Configuration;
+import org.jooq.meta.jaxb.Logging;
+
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -23,30 +35,37 @@ public abstract class BaseDAO<T> {
 
     protected <R> R execute(Function<DSLContext, R> function) throws SQLException {
         try(Connection connection = MySQLConnection.getConnection()) {
-            //USA A CONEXAO PARA CRIAR UM OBJETO DO TIPO DSLCONTEXT PARA REALIZAR CONSULTAS SQL
-            DSLContext create = DSL.using(connection);
+            //DSLContext create = DSL.using(connection);
+            Configuration configuration = new DefaultConfiguration();
+//            configuration.withLogging(Logging.WARN);
+            configuration.set(SQLDialect.MYSQL);
+            configuration.set(connection);
+            configuration.set(new Settings().withExecuteLogging(true));
+
+            DSLContext create = DSL.using(configuration);
 
             return function.apply(create);
         }
     }
 
     public T add(T entity) throws SQLException {
+        // TODO: use object mapper
         return execute((create) -> {
-            // Obtém os campos da entidade usando reflection
+            // Get the fields of the entity using reflection
             java.lang.reflect.Field[] fields = entity.getClass().getDeclaredFields();
 
-            // Mapeia os campos da entidade para campos do jOOQ
+            // Map the fields to JOOQ DSL fields
             Field<?>[] jooqFields = Arrays.stream(fields)
                     .map(field -> DSL.field(DSL.name(field.getName())))
                     .toArray(Field[]::new);
 
-            // Obtém os valores dos campos da entidade
+            // Map the values from the entity to an array
             Object[] values = Arrays.stream(fields)
                     .peek(field -> field.setAccessible(true))
                     .map(field -> {
                         try {
                             Object value = field.get(entity);
-                            if (value instanceof Enum) {
+                            if(value instanceof Enum) {
                                 return ((Enum<?>) value).name();
                             }
                             return value;
@@ -56,43 +75,19 @@ public abstract class BaseDAO<T> {
                     })
                     .toArray();
 
-            // Define o nome do campo de ID que precisa ser retornado pelo banco
-            String idFieldName = "id"; // Substitua pelo nome correto do campo de ID
-            Field<Integer> idField = DSL.field(DSL.name(idFieldName), Integer.class);
+            String identityFieldName = AnnotationUtil.getIdentityFieldName(entity.getClass());
 
-            // Tente realizar o insert e capturar o ID gerado
+            // Perform the insert
+            Record record = create.insertInto(getTable(), jooqFields)
+                    .values(values)
+                    .returning(DSL.field(identityFieldName))
+                    .fetchOne();
+
             try {
-                // Realiza o insert e retorna o registro com o ID gerado
-                Record record = create.insertInto(getTable(), jooqFields)
-                        .values(values)
-                        .returning(idField) // Retorna o campo de ID especificado
-                        .fetchOne();
-
-                // Verifica se o registro retornado não é nulo e se o ID gerado está correto
-                if (record != null) {
-                    Integer generatedId = record.get(idField);
-                    if (generatedId != null) {
-                        try {
-                            // Configura o ID gerado na entidade
-                            java.lang.reflect.Field entityIdField = entity.getClass().getDeclaredField(idFieldName);
-                            entityIdField.setAccessible(true);
-                            entityIdField.set(entity, generatedId);
-                            System.out.println("ID gerado: " + generatedId); // Diagnóstico
-                        } catch (NoSuchFieldException | IllegalAccessException e) {
-                            throw new RuntimeException("Erro ao definir o ID gerado automaticamente na entidade.", e);
-                        }
-                    } else {
-                        System.out.println("ID gerado foi nulo."); // Diagnóstico
-                    }
-                } else {
-                    System.out.println("Falha ao inserir e capturar o ID gerado."); // Diagnóstico
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.out.println("Erro ao executar o insert e capturar o ID: " + e.getMessage()); // Diagnóstico adicional
+                return findByIdentityField(record.get(identityFieldName), (Class<T>) entity.getClass());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
-
-            return entity;
         });
     }
 
@@ -137,6 +132,13 @@ public abstract class BaseDAO<T> {
             return null;
         });
     }
+    public T findByIdentityField(Object value, Class<T> type) throws SQLException {
+        return execute((create) -> create.select()
+                    .from(getTable())
+                    .where(DSL.field(AnnotationUtil.getIdentityFieldName(type)).eq(value))
+                    .fetchInto(type).get(0));
+    }
+
     public List<T> find(String fieldName, Object value, Class<T> type) throws SQLException {
         return execute((create) -> {
             return create.select()

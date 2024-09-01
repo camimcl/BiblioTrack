@@ -1,5 +1,6 @@
 package com.bibliotrack.entities;
 
+import com.bibliotrack.annotations.Identity;
 import com.bibliotrack.enums.Role;
 import lombok.Data;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 
 @Data
 public class User {
+    @Identity
     private int id;
     private String name;
     private String email;

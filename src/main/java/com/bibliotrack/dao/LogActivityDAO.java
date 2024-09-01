@@ -28,7 +28,7 @@ public class LogActivityDAO extends BaseDAO<LogActivity> {
         return logsPerDate.isEmpty() ? null : logsPerDate;
     }
     public LogActivity editLogActivity(LogActivity logActivity) throws SQLException {
-        int originalId = logActivity.getLogId();
+        int originalId = logActivity.getId();
         return edit(logActivity,"id",originalId);
     }
 }

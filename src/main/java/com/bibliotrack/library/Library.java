@@ -38,7 +38,7 @@ public class Library {
            user = userDAO.findUserById(1239);
 //           user.setName("Ricardo Cezar");
 //           user.setEmail("rick.cezar@example.com");
-//           user.setPassword("strongpassword13423"); // Lembre-se de que o password será criptografado
+//           user.setPassword("strongpassword13423");
 //           user.setRole(Role.STUDENT);
 //
 //           System.out.println("Registrando novo usuário...");
@@ -79,7 +79,7 @@ public class Library {
            }
 
            // Autenticação do usuário
-           boolean isAuthenticated = userService.authenticateUser(user.getEmail(), "strongpassword1");
+           boolean isAuthenticated = userService.authenticateUser(user.getEmail(), user.getPassword());
            System.out.println("Autenticação: " + (isAuthenticated ? "Bem-sucedida" : "Falhou"));
 
        } catch (SQLException e) {

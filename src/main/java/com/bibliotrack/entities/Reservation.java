@@ -1,11 +1,13 @@
 package com.bibliotrack.entities;
 
+import com.bibliotrack.annotations.Identity;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
 public class Reservation {
+    @Identity
     private int id;
     private int userId; // Thiago
     private int bookId; // O poder do habito

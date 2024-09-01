@@ -1,11 +1,13 @@
 package com.bibliotrack.entities;
 
+import com.bibliotrack.annotations.Identity;
 import lombok.Data;
 
 import java.util.Date;
 @Data
 public class LogActivity {
-    private int logId;
+    @Identity
+    private int id;
     private int userId;
     private String description;
     private Date logDate;
