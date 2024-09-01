@@ -30,5 +30,8 @@ public class BorrowDAO extends BaseDAO<Borrow> {
         List<Borrow> userBorrows = find("userID",userId, Borrow.class);
         return userBorrows.isEmpty() ? null : userBorrows;
     }
-
+    public Borrow updateBorrow(Borrow borrow) throws SQLException {
+        int originalId = borrow.getId();
+        return edit(borrow, "id", originalId);
+    }
 }

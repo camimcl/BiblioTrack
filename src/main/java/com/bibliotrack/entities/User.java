@@ -13,8 +13,7 @@ public class User {
     private String password;
     private Role role;
 
-    public User(int id, String name, String email, String password,Role role) {
-        this.id = id;
+    public User(String name, String email, String password,Role role) {
         this.name = name;
         this.email = email;
         this.password = password;

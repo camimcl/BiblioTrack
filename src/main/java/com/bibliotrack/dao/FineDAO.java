@@ -15,7 +15,7 @@ public class FineDAO extends BaseDAO<Fine> {
         return add(fine);
     }
     public Fine editFine(Fine fine) throws SQLException {
-        int originalId = fine.getFineId();
+        int originalId = fine.getId();
         return edit(fine,"id",originalId);
     }
     public void payFine(int fineId) throws SQLException {
@@ -30,4 +30,12 @@ public class FineDAO extends BaseDAO<Fine> {
 
         editField("paid", true, "fineId", fineId);
     }
+    public List<Fine> getAllFinesForUser(int userId) throws SQLException {
+        return find("userId", userId, Fine.class);
+    }
+    public Fine getFineById(int fineId) throws SQLException {
+        List<Fine> fines = find("fineId", fineId, Fine.class);
+        return fines.isEmpty() ? null : fines.get(0);
+    }
+
 }

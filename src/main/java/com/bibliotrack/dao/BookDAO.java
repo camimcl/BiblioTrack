@@ -17,15 +17,15 @@ public class BookDAO extends BaseDAO<Book> {
         remove("id",id);
     }
     public Book editBook(Book book) throws SQLException {
-        int originalId = book.getBookId();
+        int originalId = book.getId();
         return edit(book,"id",originalId);
     }
     public Book findBookById(int id) throws SQLException {
         List<Book> books = find("id",id,Book.class);
         return books.isEmpty() ? null : books.get(0);
     }
-    public List<Book> searchByName(String name) throws SQLException {
-        List<Book> books = find("name",name, Book.class);
+    public List<Book> searchByName(String title) throws SQLException {
+        List<Book> books = find("title",title, Book.class);
         return books.isEmpty() ? null : books;
     }
     public List <Book> searchByAuthor(String authorName) throws SQLException {

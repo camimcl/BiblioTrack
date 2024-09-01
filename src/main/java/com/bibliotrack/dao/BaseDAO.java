@@ -1,10 +1,8 @@
 package com.bibliotrack.dao;
 
 import com.bibliotrack.database.MySQLConnection;
-import org.jooq.DSLContext;
-import org.jooq.Field;
+import org.jooq.*;
 import org.jooq.Record;
-import org.jooq.Table;
 import org.jooq.impl.DSL;
 
 import java.sql.Connection;
@@ -33,23 +31,22 @@ public abstract class BaseDAO<T> {
     }
 
     public T add(T entity) throws SQLException {
-        // TODO: use object mapper
         return execute((create) -> {
-            // Get the fields of the entity using reflection
+            // Obtém os campos da entidade usando reflection
             java.lang.reflect.Field[] fields = entity.getClass().getDeclaredFields();
 
-            // Map the fields to JOOQ DSL fields
+            // Mapeia os campos da entidade para campos do jOOQ
             Field<?>[] jooqFields = Arrays.stream(fields)
-                        .map(field -> DSL.field(DSL.name(field.getName())))
-                        .toArray(Field[]::new);
+                    .map(field -> DSL.field(DSL.name(field.getName())))
+                    .toArray(Field[]::new);
 
-            // Map the values from the entity to an array
+            // Obtém os valores dos campos da entidade
             Object[] values = Arrays.stream(fields)
                     .peek(field -> field.setAccessible(true))
                     .map(field -> {
                         try {
                             Object value = field.get(entity);
-                            if(value instanceof Enum) {
+                            if (value instanceof Enum) {
                                 return ((Enum<?>) value).name();
                             }
                             return value;
@@ -59,14 +56,47 @@ public abstract class BaseDAO<T> {
                     })
                     .toArray();
 
-            // Perform the insert
-            create.insertInto(getTable(), jooqFields)
-                    .values(values)
-                    .execute();
+            // Define o nome do campo de ID que precisa ser retornado pelo banco
+            String idFieldName = "id"; // Substitua pelo nome correto do campo de ID
+            Field<Integer> idField = DSL.field(DSL.name(idFieldName), Integer.class);
+
+            // Tente realizar o insert e capturar o ID gerado
+            try {
+                // Realiza o insert e retorna o registro com o ID gerado
+                Record record = create.insertInto(getTable(), jooqFields)
+                        .values(values)
+                        .returning(idField) // Retorna o campo de ID especificado
+                        .fetchOne();
+
+                // Verifica se o registro retornado não é nulo e se o ID gerado está correto
+                if (record != null) {
+                    Integer generatedId = record.get(idField);
+                    if (generatedId != null) {
+                        try {
+                            // Configura o ID gerado na entidade
+                            java.lang.reflect.Field entityIdField = entity.getClass().getDeclaredField(idFieldName);
+                            entityIdField.setAccessible(true);
+                            entityIdField.set(entity, generatedId);
+                            System.out.println("ID gerado: " + generatedId); // Diagnóstico
+                        } catch (NoSuchFieldException | IllegalAccessException e) {
+                            throw new RuntimeException("Erro ao definir o ID gerado automaticamente na entidade.", e);
+                        }
+                    } else {
+                        System.out.println("ID gerado foi nulo."); // Diagnóstico
+                    }
+                } else {
+                    System.out.println("Falha ao inserir e capturar o ID gerado."); // Diagnóstico
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("Erro ao executar o insert e capturar o ID: " + e.getMessage()); // Diagnóstico adicional
+            }
 
             return entity;
         });
     }
+
+
     public T edit(T entity, String idField, Object idValue) throws SQLException {
         return execute((create) -> {
             // Obtenha os campos da entidade usando reflection
