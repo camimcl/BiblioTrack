@@ -15,6 +15,7 @@ import com.bibliotrack.services.FineService;
 import com.bibliotrack.services.UserService;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -32,58 +33,29 @@ public class Library {
            FineDAO fineDAO = new FineDAO();
            FineService fineService = new FineService();
 
-           // Criando e inserindo um novo usuário
+            User user ;
+            User user2 ;
+            User user3 ;
 
-           User user = new User();
-//           user = userDAO.findUserById(6);
-           user.setName("Ricardo Cezar");
-           user.setEmail("rick.cezar@example.com");
-           user.setPassword("strongpassword13423");
-           user.setRole(Role.STUDENT);
 
-           System.out.println("Registrando novo usuário...");
-           user = userService.registerUser(user);
-           System.out.println("Usuário registrado com ID: " + user.getId());
+            Book book ;
+            Book book2 ;
+            Book book3 ;
 
-           // Criando e inserindo um novo livro
-           Book book = new Book();
-//           book = bookDAO.findBookById(2);
-           book.setTitle("Poder do Hábito");
-           book.setAuthor("Charles Duhigg");
-           book.setIsbn(978140006);
-           book.setGenre("self-help");
-           book.setAvailability(true);
 
-           System.out.println("Adicionando novo livro...");
-           book = bookDAO.add(book);
-           System.out.println("Livro adicionado com ID: " + book.getId());
 
-           // Criando um novo empréstimo
-           System.out.println("Realizando um empréstimo de livro...");
-           Borrow borrow = borrowService.addBookBorrow(book.getId(), user.getId(), 14);
-           System.out.println("Empréstimo realizado com ID: " + borrow.getId());
 
-           // Devolvendo o livro com atraso para gerar multa
-           System.out.println("Devolvendo o livro com atraso...");
-           Date returnDate = new Date(); // Data de hoje como data de devolução
-           borrowService.returnBook(borrow.getId(), returnDate);
-           System.out.println("Livro devolvido.");
+////         Devolvendo o livro com atraso para gerar multa
+//           System.out.println("Devolvendo o livro com atraso...");
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.set(Calendar.YEAR,2024);
+//            calendar.set(Calendar.MONTH,9);
+//            calendar.set(Calendar.DATE,24);
+////
+//           Date returnDate = calendar.getTime();
+//
 
-           // Buscando multas geradas para o usuário
-           List<Fine> fines = fineDAO.getAllFinesForUser(user.getId());
-           if (!fines.isEmpty()) {
-               Fine fine = fines.get(0);
-               System.out.println("Multa aplicada ao usuário: R$" + fine.getAmount() + " (ID da multa: " + fine.getId() + ")");
-           } else {
-               System.out.println("Nenhuma multa encontrada para o usuário.");
-           }
 
-           // Autenticação do usuário
-           boolean isAuthenticated = userService.authenticateUser(user.getEmail(), user.getPassword());
-           System.out.println("Autenticação: " + (isAuthenticated ? "Bem-sucedida" : "Falhou"));
-
-       } catch (SQLException e) {
-           e.printStackTrace();
        } catch (Exception e) {
            e.printStackTrace();
        }

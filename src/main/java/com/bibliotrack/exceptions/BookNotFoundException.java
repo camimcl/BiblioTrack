@@ -2,7 +2,7 @@ package com.bibliotrack.exceptions;
 
 public class BookNotFoundException extends Exception{
 
-    public BookNotFoundException(String message){
-        super(message);
+    public BookNotFoundException(int bookId){
+        super("Book with ID: " + bookId + " Not found");
     }
 }

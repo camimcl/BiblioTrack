@@ -86,7 +86,6 @@ public abstract class BaseDAO<T> {
         });
     }
 
-
     public T edit(T entity, String idField, Object idValue) throws SQLException {
         return execute((create) -> {
             // Obtenha os campos da entidade usando reflection
@@ -101,8 +100,13 @@ public abstract class BaseDAO<T> {
                     .peek(field -> field.setAccessible(true))
                     .forEach(field -> {
                         try {
-                            // Adiciona apenas campos que não sejam o campo ID
-                            fieldMap.put(DSL.field(DSL.name(field.getName())), field.get(entity));
+                            Object value = field.get(entity);
+                            if (value instanceof Enum) {
+                                // Converte o enum para o valor String correspondente
+                                value = ((Enum<?>) value).name();
+                            }
+                            // Adiciona o campo e o valor (convertido se for enum) ao Map
+                            fieldMap.put(DSL.field(DSL.name(field.getName())), value);
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException(e);
                         }
@@ -117,6 +121,7 @@ public abstract class BaseDAO<T> {
             return entity;
         });
     }
+
 
 
     public void remove(String idField, Object idValue) throws SQLException {

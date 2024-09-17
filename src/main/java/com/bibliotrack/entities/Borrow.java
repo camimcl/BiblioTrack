@@ -15,6 +15,7 @@ public class Borrow {
     private Date returnDate; // Deve ser definido quando o livro é devolvido
     private Date dueDate; // Calculado no momento da criação do empréstimo
     private boolean returned;
+    private double fine;
 
     public Borrow(int userId, int bookId, Date borrowDate, Date dueDate, boolean returned) {
         this.userId = userId;

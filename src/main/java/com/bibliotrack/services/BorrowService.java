@@ -22,14 +22,11 @@ public class BorrowService {
 
     //fazer emprestimo de livro
     public Borrow addBookBorrow(int bookId, int userId, int borrowPeriodDays) throws SQLException, BookNotFoundException, BookNotAvailableException {
-
+        BookService bookService = new BookService();
         Book book = bookDAO.findBookById(bookId);
 
-        if(book == null){
-            throw new BookNotFoundException("Book with ID: " + bookId + " not found");
-        }
-        if(!book.isAvailable()){
-            throw new BookNotAvailableException("Book with ID: " + bookId + " is not available");
+        if(!bookService.isBookAvailable(bookId)){
+            throw new BookNotAvailableException(bookId);
         };
 
         Borrow borrow = new Borrow();
@@ -42,7 +39,11 @@ public class BorrowService {
         calendar.add(Calendar.DAY_OF_MONTH, borrowPeriodDays);
         borrow.setDueDate(calendar.getTime());
 
-        return borrowDAO.add(borrow);
+        borrow = borrowDAO.add(borrow);
+        book.setAvailability(false);
+        bookDAO.editBook(book);
+
+        return borrow;
     }
     public void returnBook(int borrowId, Date returnDate) throws SQLException {
         Borrow borrow = borrowDAO.findBorrowById(borrowId);
@@ -56,17 +57,30 @@ public class BorrowService {
 
         borrow.setReturnDate(returnDate);
 
-        // Verificar se há atraso e calcular a multa, se necessário
+        Book book = bookDAO.findBookById(borrow.getId());
+        book.setAvailability(true);
+
+        //verificar data de devolução x dueDate
         if (returnDate.after(borrow.getDueDate())) {
+            // Convertendo java.sql.Date para java.util.Date, se necessário
+            java.util.Date dueDateUtil = (borrow.getDueDate() instanceof java.sql.Date) ?
+                    new java.util.Date(borrow.getDueDate().getTime()) : borrow.getDueDate();
+            java.util.Date returnDateUtil = (returnDate instanceof java.sql.Date) ?
+                    new java.util.Date(returnDate.getTime()) : returnDate;
+
             double fineAmount = fineService.calculateFine(
-                    borrow.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-                    returnDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    dueDateUtil.toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                    returnDateUtil.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+
+            //verificação de multa
             if (fineAmount > 0) {
                 User user = userDAO.findUserById(borrow.getUserId());
                 fineService.applyFine(user, fineAmount);
+                borrow.setFine(fineAmount);
             }
-        }
-
+        //atualiza aquele borrow e status do livro
+        bookDAO.editBook(book);
         borrowDAO.updateBorrow(borrow);
+         }
     }
 }
