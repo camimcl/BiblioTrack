@@ -118,9 +118,9 @@ public class LibraryCLI {
         System.out.println("=== Realizar Devolução ===");
         System.out.print("ID do Empréstimo: ");
         int borrowId = scanner.nextInt();
-        System.out.print("Data de Devolução (yyyy-mm-dd): ");
+        System.out.print("Data de Devolução (yyyy/mm/dd): ");
         String returnDate = scanner.next();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
         borrowService.returnBook(borrowId, sdf.parse(returnDate));
         System.out.println("Devolução realizada com sucesso!");
