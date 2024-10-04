@@ -88,31 +88,27 @@ public abstract class BaseDAO<T> {
 
     public T edit(T entity, String idField, Object idValue) throws SQLException {
         return execute((create) -> {
-            // Obtenha os campos da entidade usando reflection
             java.lang.reflect.Field[] fields = entity.getClass().getDeclaredFields();
 
-            // Crie um Map para armazenar os pares campo/valor a serem atualizados
             Map<Field<?>, Object> fieldMap = new HashMap<>();
 
-            // Popule o Map com os valores da entidade, excluindo o campo ID
             Arrays.stream(fields)
                     .filter(field -> !field.getName().equals(idField)) // Exclui o campo ID
                     .peek(field -> field.setAccessible(true))
                     .forEach(field -> {
                         try {
                             Object value = field.get(entity);
-                            if (value instanceof Enum) {
-                                // Converte o enum para o valor String correspondente
-                                value = ((Enum<?>) value).name();
+                            if (value != null && !(value instanceof String && ((String) value).isEmpty())) {
+                                if (value instanceof Enum) {
+                                    value = ((Enum<?>) value).name();
+                                }
+                                fieldMap.put(DSL.field(DSL.name(field.getName())), value);
                             }
-                            // Adiciona o campo e o valor (convertido se for enum) ao Map
-                            fieldMap.put(DSL.field(DSL.name(field.getName())), value);
                         } catch (IllegalAccessException e) {
                             throw new RuntimeException(e);
                         }
                     });
 
-            // Realiza o update
             create.update(getTable())
                     .set(fieldMap)
                     .where(DSL.field(idField).eq(idValue))
@@ -121,8 +117,6 @@ public abstract class BaseDAO<T> {
             return entity;
         });
     }
-
-
 
     public void remove(String idField, Object idValue) throws SQLException {
         execute((create) -> {

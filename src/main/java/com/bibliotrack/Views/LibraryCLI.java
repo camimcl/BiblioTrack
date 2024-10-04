@@ -19,7 +19,7 @@ import java.util.Scanner;
 
 public class LibraryCLI {
     private static final Scanner scanner = new Scanner(System.in);
-    private static final UserService userService = new UserService();
+    private static final UserService userService = UserService.getInstance();
     private static final BookService bookService = new BookService();
     private static final BorrowService borrowService = new BorrowService();
     private static final ReservationService reservationService = new ReservationService();
@@ -155,6 +155,7 @@ public class LibraryCLI {
         int userId = scanner.nextInt();
         scanner.nextLine(); // consume newline
 
+        // Usando o UserService para buscar o usuário
         User user = userDAO.findUserById(userId);
         if (user == null) {
             System.out.println("Usuário não encontrado!");
@@ -169,12 +170,14 @@ public class LibraryCLI {
         user.setPassword(scanner.nextLine());
         System.out.print("Nova Função (atual: " + user.getRole() + "): ");
         String roleStr = scanner.nextLine();
-        Role role = Role.valueOf(roleStr) ;
+        Role role = Role.valueOf(roleStr);
         user.setRole(role);
 
-        userDAO.editUser(user);
+        // Agora chama o método de edição do UserService
+        userService.editUser(user);
         System.out.println("Usuário editado com sucesso!");
     }
+
 
     private static void editBook() throws SQLException {
         System.out.println("=== Editar Livro ===");

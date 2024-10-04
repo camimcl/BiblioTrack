@@ -28,12 +28,13 @@ public class UserDAO extends BaseDAO<User> {
         User existingUser = findUserById(originalId);
         if (existingUser != null && !existingUser.getPassword().equals(user.getPassword())) {
             // A senha foi modificada, então aplique o hash novamente
-//            String hashedPassword =  userService.hashPassword(user.getPassword());
-//            user.setPassword(hashedPassword);
+            String hashedPassword = UserService.getInstance().hashPassword(user.getPassword());
+            user.setPassword(hashedPassword);
         }
 
         return edit(user, "id", originalId);
     }
+
 
     public User findUserById(int id) throws SQLException {
        return findByIdentityField(id, User.class);
