@@ -192,10 +192,10 @@ public class LibraryCLI {
         book.setTitle(scanner.nextLine());
         System.out.print("Novo Autor (atual: " + book.getAuthor() + "): ");
         book.setAuthor(scanner.nextLine());
-        System.out.print("Novo ISBN (atual: " + book.getIsbn() + "): ");
-        book.setIsbn(scanner.nextLong());
         System.out.print("Novo Gênero (atual: " + book.getGenre() + "): ");
         book.setGenre(scanner.nextLine());
+        System.out.print("Nova disponibilidade  (atual: " + book.isAvailable() + "): ");
+        book.setAvailability(scanner.nextBoolean());
 
         bookDAO.editBook(book);
         System.out.println("Livro editado com sucesso!");

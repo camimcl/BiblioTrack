@@ -5,9 +5,11 @@ import com.bibliotrack.entities.User;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.bibliotrack.services.UserService;
 import org.jooq.impl.DSL;
 
 public class UserDAO extends BaseDAO<User> {
+
 
     @Override
     protected String getTableName() {
@@ -26,8 +28,8 @@ public class UserDAO extends BaseDAO<User> {
         User existingUser = findUserById(originalId);
         if (existingUser != null && !existingUser.getPassword().equals(user.getPassword())) {
             // A senha foi modificada, então aplique o hash novamente
-            String hashedPassword = passwordHasher.hash(user.getPassword());
-            user.setPassword(hashedPassword);
+//            String hashedPassword =  userService.hashPassword(user.getPassword());
+//            user.setPassword(hashedPassword);
         }
 
         return edit(user, "id", originalId);

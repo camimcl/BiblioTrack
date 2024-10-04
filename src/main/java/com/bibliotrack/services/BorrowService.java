@@ -57,15 +57,15 @@ public class BorrowService {
 
         borrow.setReturnDate(returnDate);
 
-        Book book = bookDAO.findBookById(borrow.getId());
+        Book book = bookDAO.findBookById(borrow.getBookId());
         book.setAvailability(true);
 
         //verificar data de devolução x dueDate
-        if (returnDate.after(borrow.getDueDate())) {
-            // Convertendo java.sql.Date para java.util.Date, se necessário
-            java.util.Date dueDateUtil = (borrow.getDueDate() instanceof java.sql.Date) ?
-                    new java.util.Date(borrow.getDueDate().getTime()) : borrow.getDueDate();
-            java.util.Date returnDateUtil = (returnDate instanceof java.sql.Date) ?
+            if (returnDate.after(borrow.getDueDate())) {
+                // Convertendo java.sql.Date para java.util.Date, se necessário
+                java.util.Date dueDateUtil = (borrow.getDueDate() instanceof java.sql.Date) ?
+                        new java.util.Date(borrow.getDueDate().getTime()) : borrow.getDueDate();
+                java.util.Date returnDateUtil = (returnDate instanceof java.sql.Date) ?
                     new java.util.Date(returnDate.getTime()) : returnDate;
 
             double fineAmount = fineService.calculateFine(
