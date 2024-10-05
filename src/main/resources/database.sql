@@ -26,10 +26,11 @@ CREATE TABLE Borrow (
   borrowDate DATE NOT NULL,
   returnDate DATE,
   dueDate DATE NOT NULL,
+  loanDuration INT NOT NULL,
   returned BOOLEAN NOT NULL DEFAULT FALSE,
   fine DECIMAL(10, 2) DEFAULT 0.00,
   FOREIGN KEY (userId) REFERENCES User(id),
-  FOREIGN KEY (bookId) REFERENCES Book(id)
+  FOREIGN KEY (bookId) REFERENCES Book(id),
 );
 
 CREATE TABLE Reservation (
@@ -44,9 +45,11 @@ CREATE TABLE Reservation (
 CREATE TABLE Fine (
   id INT AUTO_INCREMENT PRIMARY KEY,
   userId INT NOT NULL,
+  borrowId INT NOT NULL,
   amount DECIMAL(10, 2) NOT NULL,
   paid BOOLEAN NOT NULL DEFAULT FALSE,
-  FOREIGN KEY (userId) REFERENCES User(id)
+  FOREIGN KEY (userId) REFERENCES User(id),
+  FOREIGN KEY (borrowId) REFERENCES Borrow(id)
 );
 
 CREATE TABLE LogActivity (
