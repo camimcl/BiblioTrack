@@ -108,7 +108,7 @@ public class LibraryCLI {
         System.out.print("ID do Livro: ");
         int bookId = scanner.nextInt();
         scanner.nextLine(); // consume newline
-        System.out.println("Qunatidade de dias emprestado :");
+        System.out.println("Quantidade de dias emprestado :");
         int borrowPeriodDays = scanner.nextInt();
         borrowService.addBookBorrow(bookId,userId,borrowPeriodDays);
         System.out.println("Empréstimo realizado com sucesso!");
@@ -142,10 +142,12 @@ public class LibraryCLI {
         System.out.println("=== Aplicar Multa ===");
         System.out.print("ID do Usuário: ");
         int userId = scanner.nextInt();
+        System.out.println("Id do Empréstimo:");
+        int borrowId = scanner.nextInt();
         System.out.print("Valor da Multa: ");
         double fineAmount = scanner.nextDouble();
         scanner.nextLine(); // consume newline
-        fineService.applyFine(userDAO.findUserById(userId), fineAmount);
+        fineService.applyFine(userDAO.findUserById(userId), fineAmount,borrowId);
         System.out.println("Multa aplicada com sucesso!");
     }
 

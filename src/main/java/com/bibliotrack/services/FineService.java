@@ -1,6 +1,8 @@
 package com.bibliotrack.services;
 
+import com.bibliotrack.dao.BorrowDAO;
 import com.bibliotrack.dao.FineDAO;
+import com.bibliotrack.entities.Borrow;
 import com.bibliotrack.entities.Fine;
 import com.bibliotrack.entities.User;
 
@@ -12,10 +14,11 @@ import java.util.List;
 public class FineService {
     private final FineDAO fineDAO;
     private static final double DAILY_FINE_RATE = 4.0;
-
+    private final BorrowDAO borrowDAO;
 
     public FineService() {
         this.fineDAO = new FineDAO();
+        this.borrowDAO = new BorrowDAO();
     }
 
     public double calculateFine(LocalDate dueDate, LocalDate returnDate) {
@@ -26,11 +29,21 @@ public class FineService {
         return 0.0;
     }
 
-    public void applyFine(User user, double fineAmount) throws SQLException {
+    public void applyFine(User user, double fineAmount, int borrowId) throws SQLException {
         Fine fine = new Fine();
         fine.setAmount(fineAmount);
         fine.setUserId(user.getId());
         fine.setPaid(false);
+
+        Borrow borrow = borrowDAO.findBorrowById(borrowId);
+
+        if (borrow == null) {
+            throw new IllegalArgumentException("Borrow Transaction not found.");
+        }
+        borrow.setFine(fineAmount + borrow.getFine());
+        borrowDAO.updateBorrow(borrow);
+
+        fine.setBorrowId(borrow.getId());
 
         fineDAO.createFine(fine);
     }

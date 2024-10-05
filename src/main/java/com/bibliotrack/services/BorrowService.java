@@ -33,6 +33,7 @@ public class BorrowService {
         borrow.setBookId(bookId);
         borrow.setUserId(userId);
         borrow.setBorrowDate(new Date());
+        borrow.setLoanDuration(borrowPeriodDays);
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(borrow.getBorrowDate());
@@ -75,7 +76,8 @@ public class BorrowService {
             //verificação de multa
             if (fineAmount > 0) {
                 User user = userDAO.findUserById(borrow.getUserId());
-                fineService.applyFine(user, fineAmount);
+                fineAmount += borrow.getFine();
+                fineService.applyFine(user, fineAmount,borrow.getId());
                 borrow.setFine(fineAmount);
             }
         //atualiza aquele borrow e status do livro

@@ -16,13 +16,15 @@ public class Borrow {
     private Date dueDate; // Calculado no momento da criação do empréstimo
     private boolean returned;
     private double fine;
+    private int loanDuration;
 
-    public Borrow(int userId, int bookId, Date borrowDate, Date dueDate, boolean returned) {
+    public Borrow(int userId, int bookId, Date borrowDate, Date dueDate, boolean returned,int loanDuration) {
         this.userId = userId;
         this.bookId = bookId;
         this.borrowDate = borrowDate;
         this.dueDate = dueDate;
         this.returned = returned;
+        this.loanDuration = loanDuration;
     }
 
     public Borrow() {
