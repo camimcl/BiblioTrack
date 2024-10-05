@@ -9,14 +9,8 @@ This project is a Library Management System developed in Java, which allows you 
 #### The system uses a MySQL database to store information and follows Object Orientation principles.
 #### I plan to make a graphical interface later, but i'll focus on business logic and cruds, as I will not use frameworks for this project.
 
-### Still working on
-- General system logic
-- Reports based on some interactions
-- User authentication
-- System interface
-
-## Objective
-My goal with this project is to improve my ability to find and solve problems in the business logic surrounding the project.
+## Goal
+To improve my hard skills regarding implementing code based on requirements
 
 ## Tools  
 - Git
@@ -26,6 +20,11 @@ My goal with this project is to improve my ability to find and solve problems in
 - JOOQ
 - Maven
 
+### TODO 
+- General system logic
+- Reports based on some interactions
+- User authentication
+- System interface
 
   
   
